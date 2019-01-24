@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>emitter</title>
+</head>
+<body>
+  <p>localStorage key: <input id="key" type="text"></p>
+  <p>localStorage value: <input id="value" type="text"></p>
+  <button id="btn" type="button">set localStorage</button>
+</body>
+<script>
+var key = document.getElementById('key');
+var value = document.getElementById('value');
+key.value = 'key';
+value.value = 'from emitter page';
+document.getElementById('btn').addEventListener('click', function() {
+  localStorage.setItem(key.value, value.value);
+});
+</script>
+</html>

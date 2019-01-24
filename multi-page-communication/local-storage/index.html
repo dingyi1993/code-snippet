@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>home page</title>
+</head>
+<body>
+  <div id="msg"></div>
+</body>
+<script>
+window.onstorage = function(e) {
+  var p = document.createElement('p');
+  p.innerHTML = '监听到了 ' + e.key + ' 的改变，oldVal：' + e.oldValue + '，newVal：' + e.newValue;
+  document.getElementById('msg').appendChild(p);
+  console.log(e);
+};
+</script>
+</html>

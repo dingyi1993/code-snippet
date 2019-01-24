@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>emitter</title>
+</head>
+<body>
+  <div id="msg"></div>
+</body>
+<script>
+window.addEventListener('message', function(e) {
+   var p = document.createElement('p');
+  p.innerHTML = '收到了消息：' + e.data;
+  document.getElementById('msg').appendChild(p);
+  console.log(e);
+});
+</script>
+</html>

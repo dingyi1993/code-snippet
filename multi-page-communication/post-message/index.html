@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>home page</title>
+</head>
+<body>
+  <button id="open" type="button">打开窗口</button>
+  <p>输入数据: <input id="data" type="text"></p>
+  <button id="btn" type="button">发送数据</button>
+</body>
+<script>
+var opener;
+var data = document.getElementById('data');
+data.value = 'some data';
+document.getElementById('open').addEventListener('click', function() {
+  opener = window.open('./receiver.html');
+});
+document.getElementById('btn').addEventListener('click', function() {
+  opener.postMessage(data.value, 'http://127.0.0.1:8080');
+});
+</script>
+</html>
