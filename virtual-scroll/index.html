@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>虚拟滚动</title>
+  <style>
+    .wrapper {
+      display: flex;
+    }
+    .list {
+      width: 200px;
+      height: 600px;
+      overflow-y: scroll;
+    }
+    .list div {
+      height: 30px;
+    }
+  </style>
+</head>
+<body>
+  <button id="real-dom-btn" type="button">生成真实dom</button>
+  <button id="virtual-dom-btn" type="button">生成虚拟滚动dom</button>
+  <div class="wrapper">
+    <div class="list list1"></div>
+    <div class="list list2"></div>
+  </div>
+  <script>
+    document.getElementById('real-dom-btn').addEventListener('click', function() {
+      var fragment = document.createDocumentFragment()
+      for (var i = 0; i < 100000; i++) {
+        var child = document.createElement('div')
+        child.style.backgroundColor = `rgb(${(i + 200) % 255}, ${(i + 50) * 3 % 255}, ${(i + 100) * 5 % 255})`
+        child.innerHTML = i
+        fragment.appendChild(child)
+      }
+      document.querySelector('.list1').appendChild(fragment)
+    })
+    document.getElementById('virtual-dom-btn').addEventListener('click', function() {
+      var dataArr = []
+      for (var i = 0; i < 50; i++) {
+        var data = { backgroundColor: `rgb(${(i + 200) % 255}, ${(i + 50) * 3 % 255}, ${(i + 100) * 5 % 255})`, value: i }
+        dataArr.push(data)
+      }
+      var fragment = document.createDocumentFragment()
+      var firstChild = document.createElement('div')
+      var lastChild = document.createElement('div')
+      var dataDomArr = []
+      fragment.appendChild(firstChild)
+
+      for (var i = 0; i < ((600 / 30) + 1); i++) {
+        var child = document.createElement('div')
+        // child.style.backgroundColor = `rgb(${i % 255}, ${i % 255}, ${i % 255})`
+        // child.innerHTML = i
+        fragment.appendChild(child)
+        dataDomArr.push(child)
+      }
+      fragment.appendChild(lastChild)
+      document.querySelector('.list2').appendChild(fragment)
+      var currentOffset = -1
+      var render = function(offset, len, direction, isInit, renderAll) {
+        if (currentOffset == offset) {
+          return
+        }
+        if (offset > dataArr.length - len) {
+          return
+        }
+        currentOffset = offset
+
+        if (isInit) {
+          for (var i = 0; i < dataDomArr.length; i++) {
+            var item = dataDomArr[i]
+            var data = dataArr[offset + i]
+            item.style.backgroundColor = data.backgroundColor
+            item.innerHTML = data.value
+          }
+        } else if (renderAll) {
+          for (var i = 0; i < dataDomArr.length; i++) {
+            var item = dataDomArr[i]
+            var data = dataArr[offset + i]
+            item.style.backgroundColor = data.backgroundColor
+            item.innerHTML = data.value
+          }
+        } else {
+          if (direction === 'down') {
+            var data = dataArr[offset + dataDomArr.length - 1]
+            dataDomArr[0].style.backgroundColor = data.backgroundColor
+            dataDomArr[0].innerHTML = data.value
+            document.querySelector('.list2').insertBefore(dataDomArr[0], lastChild)
+            dataDomArr.push(dataDomArr.shift())
+          } else {
+            var data = dataArr[offset]
+            dataDomArr[dataDomArr.length - 1].style.backgroundColor = data.backgroundColor
+            dataDomArr[dataDomArr.length - 1].innerHTML = data.value
+            document.querySelector('.list2').insertBefore(dataDomArr[dataDomArr.length - 1], dataDomArr[0])
+            dataDomArr.unshift(dataDomArr.pop())
+          }
+        }
+        firstChild.style.height = offset * 30 + 'px'
+        lastChild.style.height = (dataArr.length - len - offset) * 30 + 'px'
+      }
+      render(0, dataDomArr.length, '', true)
+      var currentScrollTop = 0
+      document.querySelector('.list2').addEventListener('scroll', function(e) {
+        console.log(e.target.scrollTop, Math.floor(e.target.scrollTop / 30))
+        // window.requestAnimationFrame(function() {
+        var direction = e.target.scrollTop > currentScrollTop ? 'down' : 'up'
+        console.log(Math.abs(e.target.scrollTop - currentScrollTop))
+        render(Math.floor(e.target.scrollTop / 30), dataDomArr.length, direction, false, Math.abs(e.target.scrollTop - currentScrollTop) > 30)
+        currentScrollTop = e.target.scrollTop
+        // })
+      })
+    })
+  </script>
+</body>
+</html>
